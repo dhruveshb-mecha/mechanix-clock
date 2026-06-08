@@ -1,0 +1,9 @@
+name: packaging-metadata
+version: 1.0.0
+summary: Metadata for Mechanix Clock app packaging
+applications:
+  - name: clock
+    folder: .
+    binary: mechanix_clock
+    description: "Mechanix Clock application"
+    maintainer: "Minesh Purohit <mineshp@mechasystems.com>"
