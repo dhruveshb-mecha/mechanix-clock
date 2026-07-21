@@ -297,6 +297,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'World Clock - Coming Soon'**
   String get world_clock_coming_soon;
+
+  /// Title for the timers screen
+  ///
+  /// In en, this message translates to:
+  /// **'Timers'**
+  String get timers;
+
+  /// Button text to cancel the timer
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Button text to pause the timer
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pause;
+
+  /// Button text to resume the timer
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get resume;
+
+  /// Button text to dismiss the finished timer alert
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get dismiss;
+
+  /// Title for the finished timer alert
+  ///
+  /// In en, this message translates to:
+  /// **'Timer Finished'**
+  String get timer_finished;
+
+  /// SnackBar message when the selected timer duration is already saved as a preset
+  ///
+  /// In en, this message translates to:
+  /// **'Preset already exists'**
+  String get timer_preset_exists;
+
+  /// SnackBar message when trying to save a 0 duration preset
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a duration greater than 0'**
+  String get timer_preset_invalid_duration;
+
+  /// Button text to delete/cancel the running timer
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Label for naming a timer preset
+  ///
+  /// In en, this message translates to:
+  /// **'Preset Name'**
+  String get timer_preset_name;
+
+  /// Hint text for timer preset name field
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Tea, Workout, Study'**
+  String get timer_preset_name_hint;
+
+  /// Generic save button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Title for editing a preset
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Preset'**
+  String get edit_preset;
+
+  /// Title for adding a preset
+  ///
+  /// In en, this message translates to:
+  /// **'Add Preset'**
+  String get add_preset;
+
+  /// Abbreviated label for hours with a leading space
+  ///
+  /// In en, this message translates to:
+  /// **' hrs'**
+  String get hours_abbr;
+
+  /// Abbreviated label for minutes with a leading space
+  ///
+  /// In en, this message translates to:
+  /// **' mins'**
+  String get minutes_abbr;
+
+  /// Button text to restart the timer
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get restart;
+
+  /// Label for the Timezone ID row in details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Timezone'**
+  String get timezone_id;
+
+  /// Label for the Time Difference row in details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Time Difference'**
+  String get time_difference;
+
+  /// Label for the Day/Night Status row in details screen
+  ///
+  /// In en, this message translates to:
+  /// **'Day/Night Status'**
+  String get day_night_status;
+
+  /// Status indicating it is daytime
+  ///
+  /// In en, this message translates to:
+  /// **'Daytime'**
+  String get daytime;
+
+  /// Status indicating it is nighttime
+  ///
+  /// In en, this message translates to:
+  /// **'Nighttime'**
+  String get nighttime;
+
+  /// Indicates target timezone is same as local time
+  ///
+  /// In en, this message translates to:
+  /// **'Same time as local'**
+  String get same_as_local;
+
+  /// Indicates target timezone is ahead of local time
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours ahead of local'**
+  String hours_ahead(String hours);
+
+  /// Indicates target timezone is behind of local time
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} hours behind local'**
+  String hours_behind(String hours);
+
+  /// Title for the world clock screen
+  ///
+  /// In en, this message translates to:
+  /// **'World Clock'**
+  String get world_clock;
+
+  /// Message displayed when there are no world clocks added
+  ///
+  /// In en, this message translates to:
+  /// **'No world clocks added yet'**
+  String get no_world_clocks;
+
+  /// Hint on how to add world clocks
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add cities around the world.'**
+  String get tap_to_add_cities;
+
+  /// Label indicating today
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// Label indicating tomorrow
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
+
+  /// Label indicating yesterday
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// Message displayed when no cities match the search query
+  ///
+  /// In en, this message translates to:
+  /// **'No cities found'**
+  String get no_cities_found;
+
+  /// Hint text for the search city field
+  ///
+  /// In en, this message translates to:
+  /// **'Search country/ region'**
+  String get search_country_region;
 }
 
 class _AppLocalizationsDelegate

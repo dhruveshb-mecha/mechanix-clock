@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mechanix_clock/features/alarm/presentation/screens/alarm_list_screen.dart';
 import 'package:mechanix_clock/features/alarm/presentation/widgets/bottom_nav_bar.dart';
 import 'package:mechanix_clock/features/stopwatch/presentation/screens/stopwatch_screen.dart';
-import 'package:mechanix_clock/l10n/app_localizations.dart';
+import 'package:mechanix_clock/features/timer/presentation/timer_screen.dart';
+import 'package:mechanix_clock/features/world_clock/presentation/screens/world_clock_screen.dart';
 
 class MainNavigationContainer extends StatefulWidget {
   const MainNavigationContainer({super.key});
@@ -17,12 +18,11 @@ class _MainNavigationContainerState extends State<MainNavigationContainer> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final List<Widget> screens = [
       const AlarmListScreen(),
       const StopwatchScreen(),
-      Center(child: Text(l10n.timer_coming_soon)),
-      Center(child: Text(l10n.world_clock_coming_soon)),
+      const TimerScreen(),
+      const WorldClockScreen(),
     ];
 
     return Scaffold(

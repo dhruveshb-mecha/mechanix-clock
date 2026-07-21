@@ -111,4 +111,108 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get world_clock_coming_soon => 'World Clock - Coming Soon';
+
+  @override
+  String get timers => 'Timers';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get pause => 'Pause';
+
+  @override
+  String get resume => 'Resume';
+
+  @override
+  String get dismiss => 'Dismiss';
+
+  @override
+  String get timer_finished => 'Timer Finished';
+
+  @override
+  String get timer_preset_exists => 'Preset already exists';
+
+  @override
+  String get timer_preset_invalid_duration =>
+      'Please select a duration greater than 0';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get timer_preset_name => 'Preset Name';
+
+  @override
+  String get timer_preset_name_hint => 'e.g. Tea, Workout, Study';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get edit_preset => 'Edit Preset';
+
+  @override
+  String get add_preset => 'Add Preset';
+
+  @override
+  String get hours_abbr => ' hrs';
+
+  @override
+  String get minutes_abbr => ' mins';
+
+  @override
+  String get restart => 'Restart';
+
+  @override
+  String get timezone_id => 'Timezone';
+
+  @override
+  String get time_difference => 'Time Difference';
+
+  @override
+  String get day_night_status => 'Day/Night Status';
+
+  @override
+  String get daytime => 'Daytime';
+
+  @override
+  String get nighttime => 'Nighttime';
+
+  @override
+  String get same_as_local => 'Same time as local';
+
+  @override
+  String hours_ahead(String hours) {
+    return '$hours hours ahead of local';
+  }
+
+  @override
+  String hours_behind(String hours) {
+    return '$hours hours behind local';
+  }
+
+  @override
+  String get world_clock => 'World Clock';
+
+  @override
+  String get no_world_clocks => 'No world clocks added yet';
+
+  @override
+  String get tap_to_add_cities => 'Tap + to add cities around the world.';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get no_cities_found => 'No cities found';
+
+  @override
+  String get search_country_region => 'Search country/ region';
 }
