@@ -10,9 +10,7 @@ on:
       - build*
     paths:
       - ".github/workflows/build-app-aarch64.yml"
-      - "utils/**"
-      - "package-rpm.nu"
-      - "packaging-metadata.yaml"
+      - "packaging/**"
       - "pubspec.yaml"
       - "lib/**"
       - "elinux/**"
