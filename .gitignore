@@ -44,3 +44,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+.flatpak-builder/*
+
+# Packaging output
+/dist/
+/stage/
+__pycache__/
