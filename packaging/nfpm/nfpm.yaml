@@ -5,19 +5,12 @@ version: "${PKG_VERSION}"
 release: "${PKG_RELEASE}"
 section: utils
 priority: optional
-maintainer: "Minesh Purohit <mineshp@mechasystems.com>"
+maintainer: "Ojas <ojasc@ext.mechasystems.com>"
 description: Mechanix Clock application
-vendor: Mechanix Team
-homepage: https://github.com/mineshp-mecha/mechanix-clock
+homepage: https://github.com/mecha-org/mechanix-clock.git
 license: BSD
 
 contents:
-  # ./stage/bundle is populated by the CI "Stage build bundle" step, which
-  # locates flutter-elinux's actual output directory (its arch-named subpath
-  # varies between toolchain versions) and copies it here so this file can
-  # stay static. nfpm only expands ${VAR} in a handful of scalar fields
-  # (version/release/arch below) - not in content src paths - so templating
-  # the path itself isn't an option.
   - src: ./stage/bundle/mechanix_clock
     dst: /usr/share/mechanix/mechanix-clock/mechanix_clock
     file_info:
@@ -38,26 +31,3 @@ contents:
 scripts:
   postinstall: ./packaging/nfpm/scripts/postinstall.sh
   postremove: ./packaging/nfpm/scripts/postremove.sh
-
-# No dependencies are declared on purpose: the Mechanix OS base image already
-# ships every shared library this binary needs (wayland, EGL/GLES, gstreamer),
-# so there is nothing for the package manager to pull in. nfpm does not scan
-# binaries for shared-library dependencies the way `dpkg-shlibdeps` or rpm's
-# `find-requires` do - that kind of auto-detection only gives correct results
-# when building on a system matching the deployment target, which this
-# Ubuntu-based CI runner does not. If a real runtime dependency is ever
-# needed, add it explicitly:
-#
-# depends:
-#   - some-package
-#
-# rpm and deb often use different names for the same library, so when that
-# happens, override per format instead of using a single `depends:` list:
-#
-# overrides:
-#   rpm:
-#     depends:
-#       - some-rpm-package-name
-#   deb:
-#     depends:
-#       - some-deb-package-name

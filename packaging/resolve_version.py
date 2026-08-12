@@ -22,8 +22,6 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _common import read_package_name, read_upstream_version  # noqa: E402
 
-PULP_BASE_URL = "http://pkg.mecha.so"
-
 log = logging.getLogger("resolve_version")
 
 
@@ -36,11 +34,11 @@ def configure_logging(verbose: bool) -> None:
     )
 
 
-def resolve_release(pkg_name: str, upstream: str, fmt: str) -> str:
+def resolve_release(pkg_name: str, upstream: str, fmt: str, base_url: str) -> str:
     endpoint = (
-        f"{PULP_BASE_URL}/pulp/api/v3/content/deb/packages/?package={pkg_name}"
+        f"{base_url}/pulp/api/v3/content/deb/packages/?package={pkg_name}"
         if fmt == "deb"
-        else f"{PULP_BASE_URL}/pulp/api/v3/content/rpm/packages/?name={pkg_name}"
+        else f"{base_url}/pulp/api/v3/content/rpm/packages/?name={pkg_name}"
     )
 
     headers = {"Accept": "application/json"}
@@ -77,14 +75,25 @@ def main() -> None:
     parser.add_argument("--format", required=True, choices=["rpm", "deb"])
     parser.add_argument("--name", default=None, help="Defaults to the name in packaging/nfpm/nfpm.yaml")
     parser.add_argument("--upstream", default=None, help="Defaults to the version in pubspec.yaml")
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help="Defaults to the MECHA_PULP_API_URL env var",
+    )
     parser.add_argument("-v", "--verbose", action="store_true")
     args = parser.parse_args()
 
     configure_logging(args.verbose)
 
+    base_url = (args.base_url or os.environ.get("MECHA_PULP_API_URL", "")).strip().rstrip("/")
+    if not base_url:
+        raise SystemExit(
+            "No Pulp base URL configured. Set the MECHA_PULP_API_URL env var or pass --base-url."
+        )
+
     pkg_name = args.name or read_package_name()
     upstream = args.upstream or read_upstream_version()
-    release = resolve_release(pkg_name, upstream, args.format)
+    release = resolve_release(pkg_name, upstream, args.format, base_url)
 
     print(json.dumps({
         "package_name": pkg_name,
