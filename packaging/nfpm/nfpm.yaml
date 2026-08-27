@@ -10,13 +10,21 @@ description: Mechanix Clock application
 homepage: https://github.com/mecha-org/mechanix-clock.git
 license: BSD
 
+overrides:
+  rpm:
+    depends:
+      - mechanix-flutter-engine = 3.47.0
+  deb:
+    depends:
+      - "mechanix-flutter-engine (= 3.47.0)"
+
 contents:
   - src: ./stage/bundle/mechanix_clock
     dst: /usr/share/mechanix/mechanix-clock/mechanix_clock
     file_info:
       mode: 0755
-  - src: ./stage/bundle/lib
-    dst: /usr/share/mechanix/mechanix-clock/lib
+  - src: ./stage/bundle/lib/libapp.so
+    dst: /usr/share/mechanix/mechanix-clock/lib/libapp.so
   - src: ./stage/bundle/data
     dst: /usr/share/mechanix/mechanix-clock/data
   - src: ./packaging/nfpm/scripts/launcher.sh
