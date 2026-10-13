@@ -1,17 +1,18 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mechanix_clock/core/theme/app_theme.dart';
 import 'package:mechanix_clock/features/world_clock/bloc/world_clock_bloc.dart';
 import 'package:mechanix_clock/features/world_clock/bloc/world_clock_event.dart';
 import 'package:mechanix_clock/features/world_clock/bloc/world_clock_state.dart';
-import 'package:mechanix_clock/features/world_clock/presentation/screens/timezone_details_screen.dart';
+import 'package:mechanix_clock/features/world_clock/data/models/world_clock_model.dart';
 import 'package:mechanix_clock/features/world_clock/presentation/widgets/add_city_sheet.dart';
 import 'package:mechanix_clock/features/world_clock/presentation/widgets/world_clock_empty_state.dart';
 import 'package:mechanix_clock/features/world_clock/presentation/widgets/world_clock_item.dart';
 import 'package:mechanix_clock/l10n/app_localizations.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:widgets/widgets.dart';
 
 class WorldClockScreen extends StatefulWidget {
   const WorldClockScreen({super.key});
@@ -21,23 +22,36 @@ class WorldClockScreen extends StatefulWidget {
 }
 
 class _WorldClockScreenState extends State<WorldClockScreen> {
-  bool _isEditing = false;
-  late Timer _ticker;
+  Timer? _ticker;
 
   @override
   void initState() {
     super.initState();
+    _scheduleNextMinute();
+  }
 
-    _ticker = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted && !_isEditing) {
-        setState(() {});
-      }
+  void _scheduleNextMinute() {
+    final now = DateTime.now();
+
+    final nextMinute = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      now.minute + 1,
+    );
+
+    _ticker = Timer(nextMinute.difference(now), () {
+      if (!mounted) return;
+
+      setState(() {});
+      _scheduleNextMinute();
     });
   }
 
   @override
   void dispose() {
-    _ticker.cancel();
+    _ticker?.cancel();
     super.dispose();
   }
 
@@ -58,153 +72,176 @@ class _WorldClockScreenState extends State<WorldClockScreen> {
 
       String dayStr = l10n.today;
       final diffDays = targetToday.difference(localToday).inDays;
-      if (diffDays == 1) {
+      if (diffDays >= 1) {
         dayStr = l10n.tomorrow;
-      } else if (diffDays == -1) {
+      } else if (diffDays <= -1) {
         dayStr = l10n.yesterday;
       }
 
       final offset = targetNow.timeZoneOffset;
       final hours = offset.inHours;
       final minutes = offset.inMinutes.remainder(60).abs();
-      final sign = hours >= 0 ? '+' : '−';
-      final hoursStr = hours.abs().toString().padLeft(2, '0');
-      final minutesStr = minutes.toString().padLeft(2, '0');
+      final sign = offset.isNegative ? '-' : '+';
+      final hoursAbs = hours.abs();
 
-      return '$dayStr, UTC$sign$hoursStr:$minutesStr';
-    } catch (e) {
-      return '${l10n.today}, UTC+00:00';
-    }
-  }
+      final String offsetStr;
+      if (minutes == 0) {
+        offsetStr = 'UTC $sign$hoursAbs';
+      } else {
+        offsetStr = 'UTC $sign$hoursAbs:${minutes.toString().padLeft(2, '0')}';
+      }
 
-  bool _isDaytime(String timezoneId) {
-    try {
-      final location = tz.getLocation(timezoneId);
-      final now = tz.TZDateTime.now(location);
-      return now.hour >= 6 && now.hour < 18;
+      return '$dayStr, $offsetStr';
     } catch (e) {
-      return true;
+      return '${l10n.today}, UTC +0';
     }
   }
 
   void _openAddCitySheet() {
-    showModalBottomSheet(
+    MechanixBottomSheet.showModal(
       context: context,
       isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.black,
-      builder: (context) =>
-          const FractionallySizedBox(heightFactor: 1.0, child: AddCitySheet()),
+      builder: (sheetContext) => const AddCitySheet(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      backgroundColor: theme.colorScheme.surfaceContainerLowest,
+      appBar: MechanixAppBar.small(
+        primary: false,
         title: Text(
-          l10n.world_clock,
-          style: Theme.of(context).textTheme.headlineMedium,
+          l10n.world_clock.toUpperCase(),
+          style: theme.textTheme.headlineMedium!.copyWith(
+            color: theme.colorScheme.onSecondaryContainer,
+            letterSpacing: 1.0,
+          ),
         ),
-        actions: [
-          IconButton(
-            key: const Key('world_clock_edit_mode_button'),
-            icon: Icon(
-              _isEditing ? Icons.check : Icons.edit_outlined,
-              color: AppColors.textPrimary,
-            ),
-            onPressed: () {
-              setState(() {
-                _isEditing = !_isEditing;
-              });
-            },
-          ),
-          IconButton(
-            key: const Key('world_clock_add_city_button'),
-            icon: const Icon(
-              Icons.add_box_outlined,
-              color: AppColors.textPrimary,
-            ),
-            onPressed: _openAddCitySheet,
-          ),
-          const SizedBox(width: 8),
-        ],
+        backgroundColor: Colors.transparent,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: MechanixDivider(color: theme.colorScheme.outline, space: 1),
+        ),
       ),
-      body: BlocBuilder<WorldClockBloc, WorldClockState>(
-        builder: (context, state) {
-          if (state is WorldClockLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is WorldClockLoaded) {
-            if (state.clocks.isEmpty) {
-              return const WorldClockEmptyState();
-            }
-            return Theme(
-              data: Theme.of(context).copyWith(canvasColor: Colors.transparent),
-              child: ReorderableListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: state.clocks.length,
-                buildDefaultDragHandles: false,
-                itemBuilder: (context, index) {
-                  final clock = state.clocks[index];
-                  final relativeInfo = _getRelativeDayAndOffset(
-                    context,
-                    clock.timezoneId,
-                  );
-                  final isDay = _isDaytime(clock.timezoneId);
+      body: _WorldClockContent(
+        relativeInfoBuilder: (timezoneId) =>
+            _getRelativeDayAndOffset(context, timezoneId),
+      ),
+      floatingActionButton: MechanixFloatingActionButton(
+        key: const Key('world_clock_add_city_button'),
+        onPressed: _openAddCitySheet,
+        icon: const Icon(Icons.add),
+      ),
+    );
+  }
+}
 
-                  return WorldClockItem(
-                    key: ValueKey(clock.id),
-                    clock: clock,
-                    index: index,
-                    totalCount: state.clocks.length,
-                    isEditing: _isEditing,
-                    relativeInfo: relativeInfo,
-                    isDay: isDay,
-                    onTap: () {
-                      if (_isEditing) {
-                        context.read<WorldClockBloc>().add(
-                          DeleteWorldClock(clock.id),
-                        );
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                TimezoneDetailsScreen(clock: clock),
-                          ),
-                        );
-                      }
-                    },
-                    onDelete: () {
-                      context.read<WorldClockBloc>().add(
-                        DeleteWorldClock(clock.id),
-                      );
-                    },
-                  );
-                },
-                onReorderItem: (oldIndex, newIndex) {
-                  context.read<WorldClockBloc>().add(
-                    ReorderWorldClocks(oldIndex, newIndex),
-                  );
-                },
-              ),
-            );
-          } else if (state is WorldClockError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
+class _WorldClockContent extends StatelessWidget {
+  final String Function(String timezoneId) relativeInfoBuilder;
+
+  const _WorldClockContent({required this.relativeInfoBuilder});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<WorldClockBloc, WorldClockState, WorldClockState>(
+      selector: (state) => state,
+      builder: (context, state) {
+        if (state is WorldClockLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is WorldClockLoaded) {
+          if (state.clocks.isEmpty) {
+            return const WorldClockEmptyState();
           }
-          return const WorldClockEmptyState();
-        },
+          return _WorldClockListView(
+            clocks: state.clocks,
+            relativeInfoBuilder: relativeInfoBuilder,
+          );
+        } else if (state is WorldClockError) {
+          return Center(
+            child: Text(
+              state.message,
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          );
+        }
+        return const WorldClockEmptyState();
+      },
+    );
+  }
+}
+
+class _WorldClockListView extends StatelessWidget {
+  final List<WorldClock> clocks;
+  final String Function(String timezoneId) relativeInfoBuilder;
+
+  const _WorldClockListView({
+    required this.clocks,
+    required this.relativeInfoBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {PointerDeviceKind.touch, PointerDeviceKind.mouse},
       ),
+      child: MechanixSwipableList(
+        child: ListView.separated(
+          itemCount: clocks.length,
+          separatorBuilder: (context, index) =>
+              MechanixDivider(color: theme.colorScheme.outline, space: 1),
+          itemBuilder: (context, index) {
+            final clockId = clocks[index].id;
+            return BlocSelector<WorldClockBloc, WorldClockState, WorldClock?>(
+              selector: (state) {
+                if (state is WorldClockLoaded) {
+                  for (final c in state.clocks) {
+                    if (c.id == clockId) return c;
+                  }
+                }
+                return null;
+              },
+              builder: (context, clock) {
+                if (clock == null) return const SizedBox.shrink();
+                return _WorldClockItemTile(
+                  key: ValueKey(clock.id),
+                  clock: clock,
+                  relativeInfo: relativeInfoBuilder(clock.timezoneId),
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _WorldClockItemTile extends StatelessWidget {
+  final WorldClock clock;
+  final String relativeInfo;
+
+  const _WorldClockItemTile({
+    super.key,
+    required this.clock,
+    required this.relativeInfo,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return WorldClockItem(
+      key: ValueKey(clock.id),
+      clock: clock,
+      relativeInfo: relativeInfo,
+      onDelete: () {
+        context.read<WorldClockBloc>().add(DeleteWorldClock(clock.id));
+      },
     );
   }
 }
